@@ -13,6 +13,7 @@ type Obat struct {
 	Kategori  string         `json:"kategori"`
 	Harga     float64        `json:"harga"`
 	Stok      int            `json:"stok"`
+	ImageURL  string         `json:"image_url"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"index"`

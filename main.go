@@ -12,22 +12,17 @@ import (
 )
 
 func main() {
-	// Load .env
 	if err := godotenv.Load(); err != nil {
-		log.Println("File .env tidak ditemukan, pakai environment variable system")
+		log.Println("File .env tidak ditemukan")
 	}
 
-	// Koneksi database
 	config.ConnectDB()
-
-	// Auto migrate
+	config.ConnectCloudinary()
 	config.DB.AutoMigrate(&models.Obat{})
 
-	// Setup router
 	r := gin.Default()
 	routes.SetupRoutes(r)
 
-	// Jalankan server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
