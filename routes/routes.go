@@ -7,7 +7,7 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	obat := r.Group("/obat")
+	obat := r.Group("/api/obat")
 	{
 		obat.GET("", controllers.GetAllObat)
 		obat.GET("/:id", controllers.GetObatByID)
