@@ -2,36 +2,36 @@ package main
 
 import (
 	"log"
+	"os"
+
 	"medigo-be/config"
 	"medigo-be/models"
 	"medigo-be/routes"
-	"os"
 
-	"net/http"
-
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 )
 
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("File .env tidak ditemukan")
 	}
-	mux := http.NewServeMux()
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://be.mdgo.my.id"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: true,
-	})
-	handler := c.Handler(mux)
 
 	config.ConnectDB()
 	config.ConnectCloudinary()
 	config.DB.AutoMigrate(&models.Obat{})
 
 	r := gin.Default()
+
+	// CORS middleware untuk Gin
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://be.mdgo.my.id"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+	}))
+
 	routes.SetupRoutes(r)
 
 	port := os.Getenv("PORT")
@@ -39,5 +39,4 @@ func main() {
 		port = "8080"
 	}
 	r.Run(":" + port)
-	log.Fatal(http.ListenAndServe(":8080", handler))
 }
