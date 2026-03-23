@@ -4,6 +4,7 @@ import (
 	"medigo-be/config"
 	"medigo-be/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,10 +30,41 @@ func GetObatByID(c *gin.Context) {
 
 // POST /obat
 func CreateObat(c *gin.Context) {
-	var obat models.Obat
-	if err := c.ShouldBindJSON(&obat); err != nil {
+	// ambil data form
+	nama := c.PostForm("nama")
+	kategori := c.PostForm("kategori")
+	harga, _ := strconv.ParseFloat(c.PostForm("harga"), 64)
+	stok, _ := strconv.Atoi(c.PostForm("stok"))
+
+	//ambil file gambar
+	file, err := c.FormFile("image")
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	//buka file
+	src, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal membuka file"})
+		return
+	}
+	defer src.Close()
+
+	//upload ke Cloudinary
+	imageURL, err := config.UploadImage(src)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal upload gambar: " + err.Error()})
+		return
+	}
+
+	//simpan ke database
+	obat := models.Obat{
+		Nama:     nama,
+		Kategori: kategori,
+		Harga:    harga,
+		Stok:     stok,
+		ImageURL: imageURL,
 	}
 
 	result := config.DB.Create(&obat)
@@ -42,6 +74,7 @@ func CreateObat(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"data": obat})
+
 }
 
 // PUT /obat/:id
