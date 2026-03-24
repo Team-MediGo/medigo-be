@@ -86,10 +86,38 @@ func UpdateObat(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Obat tidak ditemukan"})
 		return
 	}
-	if err := c.ShouldBindJSON(&obat); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+
+	// Ambil data dari form
+	if nama := c.PostForm("nama"); nama != "" {
+		obat.Nama = nama
 	}
+	if kategori := c.PostForm("kategori"); kategori != "" {
+		obat.Kategori = kategori
+	}
+	if harga := c.PostForm("harga"); harga != "" {
+		if h, err := strconv.ParseFloat(harga, 64); err == nil {
+			obat.Harga = h
+		}
+	}
+	if stok := c.PostForm("stok"); stok != "" {
+		if s, err := strconv.Atoi(stok); err == nil {
+			obat.Stok = s
+		}
+	}
+
+	// Ganti gambar kalau ada file baru
+	file, err := c.FormFile("image")
+	if err == nil {
+		src, err := file.Open()
+		if err == nil {
+			defer src.Close()
+			imageURL, err := config.UploadImage(src)
+			if err == nil {
+				obat.ImageURL = imageURL
+			}
+		}
+	}
+
 	config.DB.Save(&obat)
 	c.JSON(http.StatusOK, gin.H{"data": obat})
 }
