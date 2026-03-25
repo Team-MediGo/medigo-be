@@ -26,7 +26,7 @@ func main() {
 
 	// CORS middleware untuk Gin
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://be.mdgo.my.id"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://medigo-fe.vercel.app/medicines"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
