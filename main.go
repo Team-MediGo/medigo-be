@@ -20,7 +20,7 @@ func main() {
 
 	config.ConnectDB()
 	config.ConnectCloudinary()
-	config.DB.AutoMigrate(&models.Obat{})
+	config.DB.AutoMigrate(&models.Obat{}, &models.User{})
 
 	r := gin.Default()
 
