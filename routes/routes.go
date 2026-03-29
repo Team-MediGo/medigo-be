@@ -19,6 +19,7 @@ func SetupRoutes(r *gin.Engine) {
 	protected := r.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 	{
+		// Obat
 		obat := protected.Group("/api/obat")
 		{
 			obat.GET("", controllers.GetAllObat)
@@ -26,6 +27,24 @@ func SetupRoutes(r *gin.Engine) {
 			obat.POST("", controllers.CreateObat)
 			obat.PUT("/:id", controllers.UpdateObat)
 			obat.DELETE("/:id", controllers.DeleteObat)
+		}
+		// Cart
+		cart := protected.Group("/cart")
+		{
+			cart.GET("", controllers.GetCart)
+			cart.POST("", controllers.AddToCart)
+			cart.PUT("/:id", controllers.UpdateCart)
+			cart.DELETE("/:id", controllers.DeleteCart)
+			cart.DELETE("", controllers.ClearCart)
+		}
+
+		// Orders
+		orders := protected.Group("/orders")
+		{
+			orders.GET("", controllers.GetOrders)
+			orders.POST("", controllers.CreateOrder)
+			orders.GET("/:id", controllers.GetOrderByID)
+			orders.PUT("/:id/status", controllers.UpdateOrderStatus)
 		}
 	}
 
