@@ -1,12 +1,3 @@
-package routes
-
-import (
-	"medigo-be/controllers"
-	"medigo-be/middleware"
-
-	"github.com/gin-gonic/gin"
-)
-
 func SetupRoutes(r *gin.Engine) {
 
 	auth := r.Group("/api/auth")
@@ -28,6 +19,7 @@ func SetupRoutes(r *gin.Engine) {
 			obat.PUT("/:id", controllers.UpdateObat)
 			obat.DELETE("/:id", controllers.DeleteObat)
 		}
+
 		// Cart
 		cart := protected.Group("/cart")
 		{
@@ -48,4 +40,10 @@ func SetupRoutes(r *gin.Engine) {
 		}
 	}
 
-}
+		// 🔥 ADMIN ROUTES
+		admin := r.Group("/api/admin")
+		admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
+		{
+		admin.GET("/report", controllers.GenerateAndSaveReport) // generate + simpan
+		admin.GET("/reports", controllers.GetSavedReports)      // ambil semua
+		}
